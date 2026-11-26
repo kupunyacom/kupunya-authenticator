@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Kupunya</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <main id="app">
+    <!-- Locked / first-run -->
+    <section id="view-locked" class="view" hidden>
+      <div class="lock-card">
+        <img src="../icons/icon-48.png" alt="" width="48" height="48" />
+        <h1 id="lock-title">Unlock Kupunya</h1>
+        <p class="muted" id="lock-subtitle">Enter your vault passphrase.</p>
+        <form id="unlock-form" autocomplete="off">
+          <input
+            type="password"
+            id="passphrase"
+            placeholder="Passphrase"
+            autocomplete="current-password"
+            required
+          />
+          <p class="error" id="unlock-error" role="alert" hidden></p>
+          <button type="submit" class="primary" id="unlock-submit">Unlock</button>
+        </form>
+        <button type="button" class="primary" id="unlock-biometric" hidden>Unlock with Touch ID</button>
+        <p class="error" id="biometric-error" role="alert" hidden></p>
+        <button type="button" class="link" id="open-setup" hidden>Set up a vault</button>
+      </div>
+    </section>
+
+    <!-- Account list -->
+    <section id="view-list" class="view" hidden>
+      <header class="topbar">
+        <input type="search" id="search" placeholder="Search accounts" autocomplete="off" />
+        <button type="button" id="btn-add" class="icon-btn" title="Add account">+</button>
+        <button type="button" id="btn-lock" class="icon-btn" title="Lock vault">&#128274;</button>
+        <button type="button" id="btn-options" class="icon-btn" title="Settings">&#9881;</button>
+      </header>
+      <ul id="accounts" class="accounts"></ul>
+      <p id="empty-state" class="empty muted" hidden>
+        No accounts yet. Press <strong>+</strong> to add one.
+      </p>
+      <p id="no-results" class="empty muted" hidden>Nothing matches that search.</p>
+    </section>
+
+    <!-- Add / scan -->
+    <section id="view-add" class="view" hidden>
+      <header class="topbar">
+        <button type="button" id="btn-back" class="icon-btn" title="Back">&#8592;</button>
+        <h2>Add account</h2>
+      </header>
+
+      <div class="tabs" role="tablist">
+        <button type="button" class="tab active" data-tab="scan" role="tab">Scan QR</button>
+        <button type="button" class="tab" data-tab="uri" role="tab">Paste URI</button>
+        <button type="button" class="tab" data-tab="manual" role="tab">Manual</button>
+      </div>
+
+      <div class="tab-panel" data-panel="scan">
+        <p class="muted">
+          Open the page showing the QR code, then capture this tab. The screenshot is
+          decoded locally and discarded.
+        </p>
+        <button type="button" class="primary" id="btn-capture">Capture visible tab</button>
+        <div id="scan-preview" hidden>
+          <canvas id="scan-canvas"></canvas>
+        </div>
+        <p class="error" id="scan-error" role="alert" hidden></p>
+      </div>
+
+      <div class="tab-panel" data-panel="uri" hidden>
+        <p class="muted">
+          Paste one or more <code>otpauth://</code> URIs, or a Google Authenticator
+          <code>otpauth-migration://</code> export.
+        </p>
+        <textarea id="uri-input" rows="5" placeholder="otpauth://totp/..."></textarea>
+        <button type="button" class="primary" id="btn-import-uri">Import</button>
+        <p class="error" id="uri-error" role="alert" hidden></p>
+      </div>
+
+      <div class="tab-panel" data-panel="manual" hidden>
+        <form id="manual-form" autocomplete="off">
+          <label>Account name<input type="text" id="m-name" required placeholder="you@example.com" /></label>
+          <label>Issuer<input type="text" id="m-issuer" placeholder="GitHub" /></label>
+          <label>Secret (base32)<input type="text" id="m-secret" required placeholder="JBSWY3DPEHPK3PXP" spellcheck="false" /></label>
+          <div class="row">
+            <label>Type
+              <select id="m-type">
+                <option value="totp">TOTP</option>
+                <option value="hotp">HOTP</option>
+                <option value="steam">Steam</option>
+              </select>
+            </label>
+            <label>Algorithm
+              <select id="m-algorithm">
+                <option>SHA1</option>
+                <option>SHA256</option>
+                <option>SHA512</option>
+              </select>
+            </label>
+          </div>
+          <div class="row">
+            <label>Digits<input type="number" id="m-digits" value="6" min="4" max="10" /></label>
+            <label id="m-period-wrap">Period (s)<input type="number" id="m-period" value="30" min="1" max="300" /></label>
+            <label id="m-counter-wrap" hidden>Counter<input type="number" id="m-counter" value="0" min="0" /></label>
+          </div>
+          <p class="error" id="manual-error" role="alert" hidden></p>
+          <button type="submit" class="primary">Add account</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="../../vendor/jsqr.js"></script>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

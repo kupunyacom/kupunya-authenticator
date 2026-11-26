@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "name": "Kupunya Authenticator",
+  "short_name": "Kupunya",
+  "version": "1.0.0",
+  "description": "Self-hosted TOTP/HOTP authenticator with a passphrase-encrypted vault. No accounts, no network, no telemetry.",
+  "minimum_chrome_version": "116",
+  "action": {
+    "default_title": "Kupunya Authenticator",
+    "default_popup": "src/popup/popup.html",
+    "default_icon": {
+      "16": "src/icons/icon-16.png",
+      "32": "src/icons/icon-32.png",
+      "48": "src/icons/icon-48.png",
+      "128": "src/icons/icon-128.png"
+    }
+  },
+  "icons": {
+    "16": "src/icons/icon-16.png",
+    "32": "src/icons/icon-32.png",
+    "48": "src/icons/icon-48.png",
+    "128": "src/icons/icon-128.png"
+  },
+  "background": {
+    "service_worker": "src/background/service-worker.js",
+    "type": "module"
+  },
+  "options_page": "src/options/options.html",
+  "permissions": ["storage", "alarms", "activeTab", "scripting"],
+  "host_permissions": [],
+  "commands": {
+    "_execute_action": {
+      "suggested_key": { "default": "Alt+Shift+K", "mac": "Alt+Shift+K" },
+      "description": "Open Kupunya"
+    }
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'none'; connect-src 'none'"
+  }
+}

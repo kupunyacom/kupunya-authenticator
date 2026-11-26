@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Unlock Kupunya</title>
+  <link rel="stylesheet" href="../popup/popup.css" />
+</head>
+<body>
+  <!-- Opened by the popup when its own Touch ID prompt keeps getting closed. -->
+  <main class="lock-card">
+    <img src="../icons/icon-48.png" alt="" width="48" height="48" />
+    <h1>Unlock Kupunya</h1>
+    <p class="muted" id="status">Touch the sensor to unlock your vault.</p>
+    <button type="button" class="primary" id="retry">Unlock with Touch ID</button>
+    <p class="error" id="error" role="alert" hidden></p>
+  </main>
+  <script type="module" src="unlock.js"></script>
+</body>
+</html>

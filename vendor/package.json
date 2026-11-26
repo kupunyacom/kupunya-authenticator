@@ -1,0 +1,4 @@
+{
+  "//": "Marks the vendored UMD bundle as CommonJS so Node's test suite can require() it. Chrome ignores this file; the extension loads jsqr.js as a classic script.",
+  "type": "commonjs"
+}

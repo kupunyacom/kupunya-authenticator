@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Kupunya Authenticator — Settings</title>
+  <link rel="stylesheet" href="options.css" />
+</head>
+<body>
+  <header class="page-header">
+    <img src="../icons/icon-48.png" alt="" width="36" height="36" />
+    <div>
+      <h1>Kupunya Authenticator</h1>
+      <p class="muted" id="version"></p>
+    </div>
+  </header>
+
+  <!-- First run -->
+  <section id="setup" class="card" hidden>
+    <h2>Create your vault</h2>
+    <p class="muted">
+      Your secrets are encrypted with AES-256-GCM using a key derived from this
+      passphrase. It is never stored and never leaves this device — if you lose it,
+      the vault cannot be recovered.
+    </p>
+    <form id="setup-form" autocomplete="off">
+      <label>Passphrase
+        <input type="password" id="setup-pass" autocomplete="new-password" required minlength="8" />
+      </label>
+      <div class="strength"><span id="strength-bar"></span></div>
+      <p class="muted small" id="strength-label">At least 8 characters. Longer beats complicated.</p>
+      <label>Confirm passphrase
+        <input type="password" id="setup-confirm" autocomplete="new-password" required />
+      </label>
+      <p class="error" id="setup-error" role="alert" hidden></p>
+      <button type="submit" class="primary">Create vault</button>
+    </form>
+  </section>
+
+  <!-- Locked -->
+  <section id="locked" class="card" hidden>
+    <h2>Vault is locked</h2>
+    <p class="muted">Unlock to manage accounts, preferences and backups.</p>
+    <form id="unlock-form" autocomplete="off">
+      <label>Passphrase
+        <input type="password" id="unlock-pass" autocomplete="current-password" required />
+      </label>
+      <p class="error" id="unlock-error" role="alert" hidden></p>
+      <button type="submit" class="primary">Unlock</button>
+    </form>
+    <button type="button" id="btn-bio-unlock" hidden>Unlock with Touch ID</button>
+  </section>
+
+  <div id="main" hidden>
+    <section class="card">
+      <h2>Accounts <span class="count" id="account-count"></span></h2>
+      <ul id="account-list" class="account-list"></ul>
+      <p class="muted" id="no-accounts" hidden>No accounts yet — add one from the toolbar popup.</p>
+    </section>
+
+    <section class="card">
+      <h2>Preferences</h2>
+      <label class="inline">
+        Auto-lock after
+        <select id="pref-autolock">
+          <option value="0">never</option>
+          <option value="1">1 minute</option>
+          <option value="5">5 minutes</option>
+          <option value="15">15 minutes</option>
+          <option value="60">1 hour</option>
+        </select>
+        of inactivity
+      </label>
+      <label class="inline"><input type="checkbox" id="pref-hide" /> Blur codes until hovered</label>
+      <label class="inline"><input type="checkbox" id="pref-autofill" /> Clicking a code fills it into the page's OTP field (falls back to copying)</label>
+      <label class="inline">
+        Sort accounts by
+        <select id="pref-sort">
+          <option value="manual">custom order</option>
+          <option value="issuer">issuer</option>
+          <option value="name">account name</option>
+        </select>
+      </label>
+      <label class="inline">
+        Theme
+        <select id="pref-theme">
+          <option value="system">follow system</option>
+          <option value="dark">dark</option>
+          <option value="light">light</option>
+        </select>
+      </label>
+    </section>
+
+    <section class="card">
+      <h2>Backup</h2>
+      <p class="muted">
+        The encrypted backup is the same envelope stored on disk: useless to anyone
+        without your passphrase. Keep a copy somewhere you control.
+      </p>
+      <div class="button-row">
+        <button type="button" id="btn-export-encrypted">Download encrypted backup</button>
+        <button type="button" id="btn-export-plain" class="danger">Export plaintext URIs</button>
+      </div>
+
+      <h3>Move to another app</h3>
+      <p class="muted">
+        Shows scannable QR codes carrying every account, in the format Google
+        Authenticator and most other apps import. Anyone who photographs a code
+        gets those accounts, so do this on a screen nobody else can see.
+      </p>
+      <div class="button-row">
+        <button type="button" id="btn-export-qr">Show transfer QR codes</button>
+        <button type="button" id="btn-hide-qr" hidden>Hide</button>
+      </div>
+      <p class="error" id="qr-error" role="alert" hidden></p>
+      <div id="qr-output" class="qr-output" hidden></div>
+
+      <h3>Restore</h3>
+      <p class="muted">
+        Accepts a Kupunya backup, or an unencrypted JSON export from another
+        authenticator app.
+      </p>
+      <label>Backup file <input type="file" id="restore-file" accept=".json,.txt,application/json,text/plain" /></label>
+      <label>Passphrase <span class="muted">(Kupunya backups only)</span>
+        <input type="password" id="restore-pass" autocomplete="off" />
+      </label>
+      <label class="inline">
+        <input type="radio" name="restore-mode" value="merge" checked /> Merge into this vault
+      </label>
+      <label class="inline">
+        <input type="radio" name="restore-mode" value="replace" /> Replace this vault entirely
+      </label>
+      <p class="error" id="restore-error" role="alert" hidden></p>
+      <button type="button" id="btn-restore">Restore</button>
+    </section>
+
+    <section class="card">
+      <h2>Security</h2>
+      <form id="passphrase-form" autocomplete="off">
+        <label>Current passphrase <input type="password" id="pass-current" required /></label>
+        <label>New passphrase <input type="password" id="pass-new" required minlength="8" /></label>
+        <label>Confirm new passphrase <input type="password" id="pass-confirm" required /></label>
+        <p class="error" id="pass-error" role="alert" hidden></p>
+        <button type="submit">Change passphrase</button>
+      </form>
+      <h3>Touch ID</h3>
+      <p class="muted" id="bio-status">Checking for Touch ID…</p>
+      <div class="button-row">
+        <button type="button" id="btn-bio-enable" hidden>Enable Touch ID unlock</button>
+        <button type="button" id="btn-bio-disable" hidden>Turn off Touch ID</button>
+      </div>
+      <p class="error" id="bio-error" role="alert" hidden></p>
+
+      <h3>Vault</h3>
+      <div class="button-row">
+        <button type="button" id="btn-lock-now">Lock now</button>
+        <button type="button" id="btn-wipe" class="danger">Delete vault</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>How this works</h2>
+      <ul class="facts">
+        <li>Codes are computed locally with WebCrypto — RFC 4226 (HOTP) and RFC 6238 (TOTP).</li>
+        <li>Secrets are sealed with AES-256-GCM; the key comes from PBKDF2-SHA256 over your passphrase.</li>
+        <li>The unlocked key lives in <code>chrome.storage.session</code>: memory only, gone when the browser closes.</li>
+        <li>Touch ID unlock wraps the vault key with a secret only your fingerprint can release (WebAuthn PRF). Your passphrase always still works.</li>
+        <li>Filling a code runs a small script in the current tab only when you click, through <code>activeTab</code>.</li>
+        <li>The extension requests no host permissions and makes no network requests.</li>
+      </ul>
+    </section>
+  </div>
+
+  <div id="toast" class="toast" hidden></div>
+  <script type="module" src="options.js"></script>
+</body>
+</html>
